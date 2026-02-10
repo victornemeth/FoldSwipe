@@ -313,7 +313,24 @@
 
                     $3Dmol.download(fileUrl, viewer, { format: fileFormat })
                         .then(() => {
-                            viewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+                            // AlphaFold3 pLDDT color scheme
+                            // Very high (pLDDT > 90): dark blue (#0053D6)
+                            // Confident (90 > pLDDT > 70): light blue/cyan (#65CBF3)
+                            // Low (70 > pLDDT > 50): yellow (#FFDB13)
+                            // Very low (pLDDT < 50): orange (#FF7D45)
+                            const plddtColorScheme = function(atom) {
+                                const bfactor = atom.b;
+                                if (bfactor > 90) return '#0053D6';      // Very high - dark blue
+                                else if (bfactor > 70) return '#65CBF3'; // Confident - cyan
+                                else if (bfactor > 50) return '#FFDB13'; // Low - yellow
+                                else return '#FF7D45';                    // Very low - orange
+                            };
+                            
+                            viewer.setStyle({}, { 
+                                cartoon: { 
+                                    colorfunc: plddtColorScheme
+                                } 
+                            });
                             viewer.zoomTo();
                             viewer.render();
                             viewer.zoom(1.5);

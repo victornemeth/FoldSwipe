@@ -41,6 +41,7 @@
         <li><strong>FASTA</strong>: Each domain as a sequence</li>
         <li><strong>PDB</strong>: Each domain as a separate PDB</li>
     </ul>
+    <p>To download this zip: 1) Go to 👀Recap 2) make sure you are on the Domain Overview 3) Download using the download button in red: 📦 Download</p>
 
     <div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
     <code style="white-space: pre;">Domain Number,Start Residue,End Residue,Predicted Domain
@@ -107,8 +108,17 @@
     <div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
     <code style="white-space: pre;">git clone https://github.com/victornemeth/ProteinTinder.git
 cd ProteinTinder
-docker compose up -d --build
-    </code>
+docker compose up -d --build</code>
+</div>
+<bold>.env</bold> file should be created in root dir and look like this:
+<div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
+    <code style="white-space: pre;">MYSQL_DATABASE=annotate_db
+MYSQL_USER=annotate_user
+MYSQL_PASSWORD=very_secure_password
+MYSQL_ROOT_PASSWORD=another_very_secure_password
+
+DJANGO_SECRET_KEY=another_another_very_secure_password
+DJANGO_DEBUG=True  # For local use debug mode is recommended.</code>
 </div>
 
     <p>Visit <code>localhost:8000</code> in your browser.</p>

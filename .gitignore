@@ -11,3 +11,4 @@ Thumbs.db
 pdb_files/*
 .env
 .ipynb_checkpoints/
+staticfiles/
