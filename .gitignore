@@ -12,3 +12,25 @@ pdb_files/*
 .env
 .ipynb_checkpoints/
 staticfiles/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+db.sqlite3
+*.log
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
