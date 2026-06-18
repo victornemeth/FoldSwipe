@@ -1,6 +1,6 @@
 <div align="center">
 
-# Fold Swipe
+# FoldSwipe
 
 ## The easy way to annotate proteins
 
