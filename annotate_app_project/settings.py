@@ -21,6 +21,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://proteintinder2.bionetic.org",  # add this just in case
     "https://proteintinder.bionetic.org",
     "http://proteintinder.bionetic.org",  # add this just in case
+    "https://foldswipe.bionetic.org",
+    "http://foldswipe.bionetic.org",  # add this just in case
 ]
 
 SECURE_SSL_REDIRECT = True
@@ -37,7 +39,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True' # Check for 'True' string
 
-ALLOWED_HOSTS = ['proteintinder2.bionetic.org', 'www.proteintinder2.bionetic.org','proteintinder.bionetic.org', 'www.proteintinder.bionetic.org']
+ALLOWED_HOSTS = ['proteintinder2.bionetic.org', 'www.proteintinder2.bionetic.org','proteintinder.bionetic.org', 'www.proteintinder.bionetic.org', 'foldswipe.bionetic.org', 'www.foldswipe.bionetic.org']
 
 
 # Application definition

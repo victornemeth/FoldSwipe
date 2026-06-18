@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}About - Protein Tinder{% endblock %}
+{% block title %}About - Fold Swipe{% endblock %}
 
 {% block content %}
 <div style="max-width: 800px; margin: auto; padding: 30px;">
     <div style="text-align: center;">
-        <h1>Protein Tinder</h1>
+        <h1>Fold Swipe</h1>
         <h3>The easy way to annotate proteins</h3>
-        <img src="{% static 'images/ProteinTinder.png' %}" alt="Logo" width="300">
+        <img src="{% static 'images/FoldSwipe.png' %}" alt="Logo" width="300">
         <p style="margin-top: 16px;">
             A <strong>mobile-friendly</strong>, <strong>web-based</strong> platform for visualizing and annotating 3D protein structures using 
             <a href="https://3dmol.csb.pitt.edu/" target="_blank">3Dmol.js</a> and 
@@ -106,8 +106,8 @@
 
     <h2>⚙️ Run Locally</h2>
     <div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
-    <code style="white-space: pre;">git clone https://github.com/victornemeth/ProteinTinder.git
-cd ProteinTinder
+    <code style="white-space: pre;">git clone https://github.com/victornemeth/FoldSwipe.git
+cd FoldSwipe
 docker compose up -d --build</code>
 </div>
 <bold>.env</bold> file should be created in root dir and look like this:
