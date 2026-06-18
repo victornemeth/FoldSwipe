@@ -1,10 +1,10 @@
 <div align="center">
 
-# Protein Tinder
+# Fold Swipe
 
 ## The easy way to annotate proteins
 
-<img src="./ProteinTinder_white.png" alt="Logo" width="300"/>
+<img src="./FoldSwipe.png" alt="Logo" width="300"/>
 
 A **mobile-friendly**, **web-based** platform for visualizing and annotating 3D protein structures using [3Dmol.js](https://3dmol.csb.pitt.edu/) and [NGL.js](https://www.npmjs.com/package/ngl). Built with Django, this app supports protein annotation through intuitive gestures and interactive tools.
 
@@ -99,8 +99,8 @@ Refine previously annotated domains by uploading `.pdb` and `.csv` files togethe
 ## ⚙️ Run Locally
 
 ```bash
-git clone https://github.com/victornemeth/ProteinTinder.git
-cd ProteinTinder
+git clone https://github.com/victornemeth/FoldSwipe.git
+cd FoldSwipe
 docker compose up -d --build
 ```
 
