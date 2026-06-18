@@ -1,6 +1,6 @@
 <div align="center">
 
-# Protein Tinder
+# FoldSwipe
 
 ## The easy way to annotate proteins
 
