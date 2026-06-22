@@ -211,7 +211,7 @@ def upload_zip_view(request):
                         return render(request, 'annotations_app/upload_zip.html', {'form': form})
                     except Exception as e:
                         logger.error(f"Error extracting ZIP file: {e}", exc_info=True)
-                        messages.error(request, f"Error extracting ZIP file: {e}")
+                        messages.error(request, "Could not extract the ZIP file. Please check the file and try again.")
                         folder.delete() # Clean up
                         return render(request, 'annotations_app/upload_zip.html', {'form': form})
 
@@ -354,7 +354,7 @@ def upload_zip_view(request):
             except Exception as e:
                 # Catch broader exceptions during file handling/processing
                 logger.error(f"An unexpected error occurred during upload for folder '{folder_name}': {e}", exc_info=True)
-                messages.error(request, f"An unexpected error occurred: {e}. Please try again.")
+                messages.error(request, "An unexpected error occurred. Please try again.")
                 if 'folder' in locals() and folder.pk:
                      folder.delete() # Attempt cleanup if folder object exists
                 return render(request, 'annotations_app/upload_zip.html', {'form': form})
@@ -598,7 +598,7 @@ def submit_annotation(request):
          return JsonResponse({"error": "Invalid JSON data"}, status=400)
     except Exception as e:
         logger.error(f"Standard Annotation submission failed: {e}", exc_info=True)
-        return JsonResponse({"error": f"An unexpected server error occurred: {str(e)}"}, status=500)
+        return JsonResponse({"error": "An unexpected server error occurred."}, status=500)
 
 
 
@@ -754,7 +754,7 @@ def submit_standard_annotation(request):
          return JsonResponse({"error": "Invalid JSON data"}, status=400)
     except Exception as e:
         logger.error(f"Standard Annotation failed: {e}", exc_info=True)
-        return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+        return JsonResponse({"error": "An unexpected error occurred."}, status=500)
 
 
 # --- NEW VIEW: Domain Correction Submission ---
@@ -837,7 +837,7 @@ def submit_domain_correction(request):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         logger.error("Domain-correction save failed: %s", e, exc_info=True)
-        return JsonResponse({"error": f"Server error: {e}"}, status=500)
+        return JsonResponse({"error": "Server error."}, status=500)
 
 @require_POST
 @login_required
@@ -1151,7 +1151,7 @@ def submit_manual_domains(request):
 
     except Exception as e:
         logger.error(f"Manual domain annotation failed: {e}", exc_info=True)
-        return JsonResponse({"error": f"Server error: {str(e)}"}, status=500)
+        return JsonResponse({"error": "Server error."}, status=500)
 
 
 
@@ -1554,7 +1554,7 @@ def skip_manual_domain(request):
         return JsonResponse({"error": "Protein not found"}, status=404)
     except Exception as e:
         logger.error("Skip-manual failed: %s", e, exc_info=True)
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": "Server error."}, status=500)
 
 
 def about_view(request):
