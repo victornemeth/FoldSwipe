@@ -135,7 +135,7 @@ def parse_domain_csv(protein):
          return None, f"CSV file encoding issue. Ensure it's UTF-8 encoded."
     except Exception as e:
         logger.error(f"Error reading or parsing CSV {protein.domain_csv_path} for protein {protein.protein_id}: {e}", exc_info=True)
-        error_msg = f"Server error reading CSV file: {e}"
+        error_msg = "Server error reading the CSV file."
         return None, error_msg
 
 
