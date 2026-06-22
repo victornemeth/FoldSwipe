@@ -9,9 +9,10 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Required by the MySQL image
-    ports:
-      # Map host port 3307 to container port 3306 (optional, for external tools)
-      - "3309:3306"
+    # DB not published to host; reachable only on the compose network via 'db2'.
+    # Uncomment below only if you need an external DB tool, bound to localhost.
+    # ports:
+    #   - "127.0.0.1:3309:3306"
     restart: unless-stopped
 
   web2:
@@ -22,13 +23,13 @@ services:
              echo 'Waiting for DB...' &&
              while ! nc -z db2 3306; do sleep 1; done;
              echo 'DB Ready.' &&
-             python manage.py makemigrations annotations_app --noinput &&
              python manage.py migrate --noinput &&
-             python manage.py runserver 0.0.0.0:8000
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 annotate_app_project.wsgi:application
              "
     volumes:
-      - .:/app # Mount current directory into the container for live code changes
-      - ./pdb_files:/app/media/ # Mount local './pdb_files' to '/app/pdb_files_mnt' inside container
+      # Persist uploaded media only; source comes from the built image (no live mount in prod).
+      - ./pdb_files:/app/media/
     ports:
       - "8069:8000" # Map host port 8000 to container port 8000
     environment:

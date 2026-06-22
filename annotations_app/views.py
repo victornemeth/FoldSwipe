@@ -182,10 +182,29 @@ def upload_zip_view(request):
                     csv_files_map = {} # Store {csv_basename: full_temp_path}
                     all_files_in_zip = [] # Keep track of all files extracted
 
+                    # Limits to guard against zip bombs / oversized uploads
+                    MAX_ZIP_ENTRIES = 10000
+                    MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GB
+                    MAX_COMPRESSION_RATIO = 100  # uncompressed / compressed per entry
+
                     try:
                         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                            infos = zip_ref.infolist()
+                            if len(infos) > MAX_ZIP_ENTRIES:
+                                raise ValueError("ZIP contains too many files.")
+                            total_uncompressed = 0
+                            for info in infos:
+                                total_uncompressed += info.file_size
+                                if total_uncompressed > MAX_TOTAL_UNCOMPRESSED:
+                                    raise ValueError("ZIP uncompressed size exceeds limit.")
+                                if info.compress_size > 0 and (info.file_size / info.compress_size) > MAX_COMPRESSION_RATIO:
+                                    raise ValueError("ZIP compression ratio looks like a zip bomb.")
                             all_files_in_zip = zip_ref.namelist()
                             zip_ref.extractall(tmpdirname)
+                    except ValueError as e:
+                        messages.error(request, str(e))
+                        folder.delete()
+                        return render(request, 'annotations_app/upload_zip.html', {'form': form})
                     except zipfile.BadZipFile:
                         messages.error(request, "Invalid ZIP file.")
                         folder.delete() # Clean up the created folder object
@@ -674,7 +693,7 @@ def redo_folder_view(request, folder_id):
     # Renamed original submission view
 @login_required
 @require_POST # Should be POST
-@csrf_exempt # Keep if using simple JS fetch without explicit CSRF header setup
+@ensure_csrf_cookie # CSRF protected; JS must send X-CSRFToken header
 def submit_standard_annotation(request):
     # This view now ONLY handles the simple Correct/Wrong/Unsure annotations
     try:
