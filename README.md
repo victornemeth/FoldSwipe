@@ -1,10 +1,10 @@
 <div align="center">
 
-# Protein Tinder
+# Fold Swipe
 
 ## The easy way to annotate proteins
 
-<img src="./ProteinTinder_white.png" alt="Logo" width="300"/>
+<img src="./FoldSwipe.png" alt="Logo" width="300"/>
 
 A **mobile-friendly**, **web-based** platform for visualizing and annotating 3D protein structures using [3Dmol.js](https://3dmol.csb.pitt.edu/) and [NGL.js](https://www.npmjs.com/package/ngl). Built with Django, this app supports protein annotation through intuitive gestures and interactive tools.
 
@@ -99,9 +99,21 @@ Refine previously annotated domains by uploading `.pdb` and `.csv` files togethe
 ## ⚙️ Run Locally
 
 ```bash
-git clone https://github.com/victornemeth/ProteinTinder.git
-cd ProteinTinder
+git clone https://github.com/victornemeth/FoldSwipe.git
+cd FoldSwipe
 docker compose up -d --build
+```
+
+**.env** file should be created in root dir and look like this:
+```bash
+MYSQL_DATABASE=annotate_db
+MYSQL_USER=annotate_user
+MYSQL_PASSWORD=very_secure_password
+MYSQL_ROOT_PASSWORD=another_very_secure_password
+
+DJANGO_SECRET_KEY=another_another_very_secure_password
+DJANGO_DEBUG=True  # For local use debug mode is recommended.
+
 ```
 
 Connect via localhost:8000

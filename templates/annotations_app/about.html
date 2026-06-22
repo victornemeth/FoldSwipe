@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About - Fold Swipe{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: auto; padding: 30px;">
+    <div style="text-align: center;">
+        <h1>Fold Swipe</h1>
+        <h3>The easy way to annotate proteins</h3>
+        <img src="{% static 'images/FoldSwipe.png' %}" alt="Logo" width="300">
+        <p style="margin-top: 16px;">
+            A <strong>mobile-friendly</strong>, <strong>web-based</strong> platform for visualizing and annotating 3D protein structures using 
+            <a href="https://3dmol.csb.pitt.edu/" target="_blank">3Dmol.js</a> and 
+            <a href="https://www.npmjs.com/package/ngl" target="_blank">NGL.js</a>. Built with Django, this app supports protein annotation through intuitive gestures and interactive tools.
+        </p>
+    </div>
+
+    <hr>
+
+    <h2>🚀 Use Cases</h2>
+
+    <h3>1. Swipe Annotations</h3>
+    <p>To start with swipe annotations upload your compressed pdb folder (zip) and click on the folder name in the folder list.</p>
+    <ul>
+        <li>👉 <strong>Swipe right</strong> — Mark as <em>Correct</em></li>
+        <li>👈 <strong>Swipe left</strong> — Mark as <em>Wrong</em></li>
+        <li>👇 <strong>Swipe down</strong> — Mark as <em>Unsure</em></li>
+    </ul>
+    <p>Annotations are saved to a MySQL database and can be exported as CSV from the web interface.</p>
+
+    <h3>2. Domain Annotation</h3>
+    <p>The upload process is the same for swipe/domain annotations. In the folder list click on `✏️Domains`. </p>
+    <ul>
+        <li>🎯 Drag across the domain bar to define regions</li>
+        <li>🏷️ Name domains using the text field below</li>
+        <li>🖱️ Adjust domain boundaries by dragging</li>
+    </ul>
+    <p>💾 Export zip:</p>
+    <ul>
+        <li><strong>CSV</strong>: One file per protein</li>
+        <li><strong>FASTA</strong>: Each domain as a sequence</li>
+        <li><strong>PDB</strong>: Each domain as a separate PDB</li>
+    </ul>
+    <p>To download this zip: 1) Go to 👀Recap 2) make sure you are on the Domain Overview 3) Download using the download button in red: 📦 Download</p>
+
+    <div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
+    <code style="white-space: pre;">Domain Number,Start Residue,End Residue,Predicted Domain
+1,1,181,XD2
+2,182,294,XD3
+    </code>
+</div>
+
+
+    <h3>3. Domain Correction</h3>
+    <p>To start with domain correction annotations upload your compressed pdb folder (zip) together with you domain annotations in csv format. The pdb filename and csv filename have to be identical except for the extension. After succesfull uploading, click on the folder name in the folder list to start domain correction annotations. </p>
+    <ul>
+        <li>✅ Mark incorrect domain entries</li>
+        <li>📦 Upload <code>.zip</code> archives with <code>.pdb</code> and <code>.csv</code> files</li>
+        <li>☑️ Enable "Include architecture data?" during upload</li>
+    </ul>
+    <p>📁 Each <code>.csv</code> must match its <code>.pdb</code> filename (e.g., <code>protein_id.pdb</code> and <code>protein_id.csv</code>).</p>
+
+    <hr>
+
+    <h2>🧪 How to Use</h2>
+    <ol>
+        <li>📝 Create an account</li>
+        <li>📤 Upload a <code>.zip</code> containing your <code>.pdb</code> files</li>
+        <li>✏️ Add an annotation title and description</li>
+        <li>⚙️ Annotate proteins using swipe or domain modes</li>
+        <li>📥 Export your annotations as <code>.csv</code> or <code>.fasta</code></li>
+    </ol>
+    <blockquote><strong>Note:</strong> The filename of each <code>.pdb</code> serves as its <code>protein_id</code>.</blockquote>
+
+    <hr>
+
+    <h2>✨ Features</h2>
+    <ul>
+        <li>🧬 Interactive 3D protein viewer</li>
+        <li>📱 Mobile and desktop support</li>
+        <li>📊 Overview dashboard</li>
+        <li>🔐 User login & registration</li>
+        <li>👥 User-to-user interaction</li>
+        <li>💾 Export to CSV, FASTA, and PDB</li>
+    </ul>
+
+    <hr>
+
+    <h2>🛠️ Tech Stack</h2>
+    <ul>
+        <li><strong>Backend:</strong> Python, Django</li>
+        <li><strong>Database:</strong> MySQL</li>
+        <li><strong>Frontend:</strong> HTML, JavaScript, 3Dmol.js, NGL.js</li>
+        <li><strong>Deployment:</strong> Docker</li>
+    </ul>
+
+    <hr>
+
+    <!-- <h2>📋 To Do</h2>
+    <ul>
+        <li>Suggestions welcome!</li>
+        <li>Improve domain correction tools (edit borders, names)</li>
+    </ul> -->
+<!-- 
+    <hr> -->
+
+    <h2>⚙️ Run Locally</h2>
+    <div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
+    <code style="white-space: pre;">git clone https://github.com/victornemeth/FoldSwipe.git
+cd FoldSwipe
+docker compose up -d --build</code>
+</div>
+<bold>.env</bold> file should be created in root dir and look like this:
+<div style="overflow-x: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin: 12px 0;">
+    <code style="white-space: pre;">MYSQL_DATABASE=annotate_db
+MYSQL_USER=annotate_user
+MYSQL_PASSWORD=very_secure_password
+MYSQL_ROOT_PASSWORD=another_very_secure_password
+
+DJANGO_SECRET_KEY=another_another_very_secure_password
+DJANGO_DEBUG=True  # For local use debug mode is recommended.</code>
+</div>
+
+    <p>Visit <code>localhost:8000</code> in your browser.</p>
+
+    <hr>
+
+    <h2>🌐 Note</h2>
+    <p>The official website is deployed via NPM. This repository is for local development.</p>
+</div>
+{% endblock %}

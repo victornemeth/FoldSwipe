@@ -182,10 +182,29 @@ def upload_zip_view(request):
                     csv_files_map = {} # Store {csv_basename: full_temp_path}
                     all_files_in_zip = [] # Keep track of all files extracted
 
+                    # Limits to guard against zip bombs / oversized uploads
+                    MAX_ZIP_ENTRIES = 10000
+                    MAX_TOTAL_UNCOMPRESSED = 2 * 1024 * 1024 * 1024  # 2 GB
+                    MAX_COMPRESSION_RATIO = 100  # uncompressed / compressed per entry
+
                     try:
                         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                            infos = zip_ref.infolist()
+                            if len(infos) > MAX_ZIP_ENTRIES:
+                                raise ValueError("ZIP contains too many files.")
+                            total_uncompressed = 0
+                            for info in infos:
+                                total_uncompressed += info.file_size
+                                if total_uncompressed > MAX_TOTAL_UNCOMPRESSED:
+                                    raise ValueError("ZIP uncompressed size exceeds limit.")
+                                if info.compress_size > 0 and (info.file_size / info.compress_size) > MAX_COMPRESSION_RATIO:
+                                    raise ValueError("ZIP compression ratio looks like a zip bomb.")
                             all_files_in_zip = zip_ref.namelist()
                             zip_ref.extractall(tmpdirname)
+                    except ValueError as e:
+                        messages.error(request, str(e))
+                        folder.delete()
+                        return render(request, 'annotations_app/upload_zip.html', {'form': form})
                     except zipfile.BadZipFile:
                         messages.error(request, "Invalid ZIP file.")
                         folder.delete() # Clean up the created folder object
@@ -345,17 +364,22 @@ def upload_zip_view(request):
     return render(request, 'annotations_app/upload_zip.html', {'form': form})
 
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
+from django.db.models import Exists, OuterRef
+from django.shortcuts import render
+
 @login_required
 def view_folders(request):
     """
-    Show all folders, but *already* ordered the way the UI should display them:
-        1. My folders first
-        2. Within each owner-group: Architecture 🏟️ before Structure-only 🧬
-        3. Finally alphabetical by folder name (case-insensitive)
+    Show folders, ordered so that “my” folders come first, architecture before
+    structure-only, and alphabetically.  By default only your folders are shown;
+    if ?show_all=1 is passed, show everyone's.
     """
+    # ←—— NEW: decide whether to show all or only the user's
+    show_all = request.GET.get("show_all") == "1"
 
-    # Base queryset (order_by is optional because we will sort in Python anyway)
-    folders = ProteinFolder.objects.all().annotate(
+    base_qs = ProteinFolder.objects.all().annotate(
         has_architecture_data=Exists(
             Protein.objects.filter(
                 folder=OuterRef("pk"),
@@ -363,35 +387,25 @@ def view_folders(request):
             )
         )
     )
+    if not show_all:
+        base_qs = base_qs.filter(user=request.user)
 
     folder_data = []
-    for folder in folders:
+    for folder in base_qs:
         total_proteins = folder.proteins.count()
         annotated_count = Annotation.objects.filter(
             folder=folder, user=request.user
         ).count()
         is_complete = total_proteins > 0 and total_proteins == annotated_count
-        folder_data.append(
-            {
-                "folder": folder,
-                "is_architecture": folder.has_architecture_data,
-                "is_complete": is_complete,
-                "total_proteins": total_proteins,
-                "annotated_count": annotated_count,
-            }
-        )
+        folder_data.append({
+            "folder": folder,
+            "is_architecture": folder.has_architecture_data,
+            "is_complete": is_complete,
+            "total_proteins": total_proteins,
+            "annotated_count": annotated_count,
+        })
 
-    # ----------  KEY:  sort in the exact order we want  ----------
-    #
-    #   • False < True, so `folder.user != request.user` gives:
-    #       0  → my folder
-    #       1  → someone else's
-    #
-    #   • `not is_architecture` gives:
-    #       0  → architecture
-    #       1  → structure-only
-    #
-    #   • Finally sort by name as a tie-breaker.
+    # sort as before
     folder_data.sort(
         key=lambda d: (
             d["folder"].user != request.user,
@@ -399,13 +413,13 @@ def view_folders(request):
             d["folder"].name.lower(),
         )
     )
-    # ----------------------------------------------------------------
 
-    return render(
-        request,
-        "annotations_app/folder_list.html",
-        {"folder_data": folder_data, "users": get_user_model().objects.all()},
-    )
+    return render(request, "annotations_app/folder_list.html", {
+        "folder_data": folder_data,
+        "users": get_user_model().objects.all(),
+        "show_all": show_all,         # ←—— pass flag into template
+    })
+
 
 def signup_view(request):
     if request.method == 'POST':
@@ -679,7 +693,7 @@ def redo_folder_view(request, folder_id):
     # Renamed original submission view
 @login_required
 @require_POST # Should be POST
-@csrf_exempt # Keep if using simple JS fetch without explicit CSRF header setup
+@ensure_csrf_cookie # CSRF protected; JS must send X-CSRFToken header
 def submit_standard_annotation(request):
     # This view now ONLY handles the simple Correct/Wrong/Unsure annotations
     try:
@@ -1541,3 +1555,10 @@ def skip_manual_domain(request):
     except Exception as e:
         logger.error("Skip-manual failed: %s", e, exc_info=True)
         return JsonResponse({"error": str(e)}, status=500)
+
+
+def about_view(request):
+    return render(request, 'annotations_app/about.html')
+
+def home(request):
+    return render(request, 'annotations_app/home.html')
